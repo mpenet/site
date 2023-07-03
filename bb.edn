@@ -1,0 +1,14 @@
+{:deps {io.github.borkdude/quickblog
+        {:git/sha "792f952be8fe0f3326b293dde3251f6a09deaf0c"}}
+ :tasks
+ {:requires ([quickblog.cli :as cli])
+  :init (def opts {:blog-title "Interlocked pairs"
+                   ;; Ideas rose in clouds; I felt them collide until pairs
+                   ;; interlocked, so to speak, making a stable combination - Pointcarre
+                   :blog-description "A blog about... anything"
+                   :twitter-handle "mpenet"
+                   :about-link "https://github.com/mpenet"})
+  quickblog {:doc "Start blogging quickly! Run `bb quickblog help` for details."
+             :task (cli/dispatch opts)}}}
+
+
