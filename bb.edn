@@ -5,6 +5,7 @@
   :init (def opts {:blog-title "Interlocked pairs"
                    ;; Ideas rose in clouds; I felt them collide until pairs
                    ;; interlocked, so to speak, making a stable combination - Pointcarre
+                   :out-dir "docs"
                    :blog-description "A blog about... anything"
                    :twitter-handle "mpenet"
                    :about-link "https://github.com/mpenet"})
