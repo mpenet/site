@@ -8,7 +8,8 @@
                    :out-dir "docs"
                    :blog-description "A blog about... anything"
                    :twitter-handle "mpenet"
-                   :about-link "https://github.com/mpenet"})
+                   :about-link "https://github.com/mpenet"
+                   :github-link "https://github.com/mpenet"})
   quickblog {:doc "Start blogging quickly! Run `bb quickblog help` for details."
              :task (cli/dispatch opts)}}}
 
