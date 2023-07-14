@@ -10,7 +10,8 @@
                    :twitter-handle "mpenet"
                    :about-link "https://github.com/mpenet"
                    :github-link "https://github.com/mpenet"
-                   :discuss-link "https://github.com/mpenet/site/discussions/categories/posts"})
+                   :discuss-link "https://github.com/mpenet/site/discussions/categories/posts"
+                   :favicon true})
   quickblog {:doc "Start blogging quickly! Run `bb quickblog help` for details."
              :task (cli/dispatch opts)}}}
 
