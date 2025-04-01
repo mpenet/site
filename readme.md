@@ -1,3 +1,3 @@
 # blog
 
-.
+`bb quickblog watch`
