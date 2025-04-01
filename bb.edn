@@ -5,7 +5,6 @@
   :init (def opts {:blog-title "Listful Thinking"
                    :out-dir "docs"
                    :blog-description "Parenthetically Speaking"
-                   :twitter-handle "mpenet"
                    :github-link "https://github.com/mpenet"
                    :discuss-link "https://github.com/mpenet/site/discussions/categories/posts"
                    :favicon true})
