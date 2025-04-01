@@ -2,11 +2,9 @@
         {:git/sha "792f952be8fe0f3326b293dde3251f6a09deaf0c"}}
  :tasks
  {:requires ([quickblog.cli :as cli])
-  :init (def opts {:blog-title "Interlocked pairs"
-                   ;; Ideas rose in clouds; I felt them collide until pairs
-                   ;; interlocked, so to speak, making a stable combination - Pointcarre
+  :init (def opts {:blog-title "Listful Thinking"
                    :out-dir "docs"
-                   :blog-description "A blog about... anything"
+                   :blog-description "Parenthetically Speaking"
                    :twitter-handle "mpenet"
                    :github-link "https://github.com/mpenet"
                    :discuss-link "https://github.com/mpenet/site/discussions/categories/posts"
