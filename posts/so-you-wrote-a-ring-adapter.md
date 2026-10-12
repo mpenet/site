@@ -148,8 +148,8 @@ underneath.
 Here is the question that separates a toy from a server, and it is so easy to
 state that it hides how hard it is:
 
-**When a client sends data faster than your handler reads it, where does
-the data go?**
+> When a client sends data faster than your handler reads it, where does
+the data go?
 
 The forty-line version has an answer by accident: into an unbounded
 buffer, until you run out of memory. One connection, one `OutOfMemory`,
