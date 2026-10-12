@@ -1,0 +1,60 @@
+Title: Grow your (Clojure) codebases
+Date: 2023-07-04
+Tags: clojure
+
+Like I said on the previous post, I will ramble a bit about a few things I think
+are paramount when working in teams, in particular with clojure code bases. But
+this can apply to other languages.
+
+It's quite common from 1-10 people code bases to have to go through a rough
+phase where a lot has to be re-considered to be able to make your engineering
+folks be happier but most importantly more productive down the road. 
+
+That might seem useless to some; just use microservices and let people do what
+they want right? Well, as it happens people like to move accross teams, SRE like
+not to have to dig into 200 flavors of code structure/style while fire-fighting,
+and the l̶a̶z̶y̶ perfectionists, like yours truly, like when things are somewhat
+consistent.
+
+## Rule #1: Do not rush into it
+
+That might seem obvious, but it's very common. Someone takes the reins and does
+it all, a few review the thing, and poof, we have the new ISO standard to do
+things for the next 5 years at least. If you're lucky, the person who did the
+job has it all right on the first shot, but it's rarely the case in my
+experience (I have been the guilty party on this one as well in the past).
+
+Not every team as the same needs, seniority or works on wildly different things
+making standardizing tricky.
+
+Something important to keep in mind also, is that once rules are set in stone
+and 10+ teams adopt them, going back to the drawing board can impact a lot of
+people. You generally don't want your roadmap littered with "refactoring Foo"
+for no good reason other than making it adopt the latest iteration of the grand
+design for these things.
+
+Like I said, don't rush, talk about it with others. 
+
+On that last point: talking about it, that's a great ramp for the next bit.
+
+## Rule #2: 
+
+On talking about it. People do not like to review a document describing an Onion
+with 250 layers. Try to keep it simple, I mean the whole design, not the
+document. 
+
+Not only for reviewers but for users. Generally adopting a few strong
+architecture principles, a repository structure and shared tooling is good
+enough. That might be easier said than done. I can give a few examples of what
+I consider red flags.
+
+Red flags: 
+* more than one way to achieve the same task, think about the folks who will
+  have to know about all of them when they juggle from repo to repo. It's a
+  major pain. Adopt one and stick with it. In clojure land that might mean have
+  a function to do task A, with a macro that just saves maybe writting a few
+  extra chars using the same function and another one that allow composing
+  multiple calls of the same function. Just provide the function alone, even if
+  that means a bit more typing here and there for folks using it. 
+
+

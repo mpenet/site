@@ -1,10 +1,10 @@
 {:deps {io.github.borkdude/quickblog
-        {:git/sha "792f952be8fe0f3326b293dde3251f6a09deaf0c"}}
+        {:git/sha "3a1d6aff07f692f6e62606317f3d9e981b1df702"}}
  :tasks
  {:requires ([quickblog.cli :as cli])
   :init (def opts {:blog-title "Listful Thinking"
                    :out-dir "docs"
-                   :blog-description "Parenthetically"
+                   :blog-description "Finding balance, one paren at a time."
                    :github-link "https://github.com/mpenet"
                    :discuss-link "https://github.com/mpenet/site/discussions/categories/posts"
                    :favicon true})
