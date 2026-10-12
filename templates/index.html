@@ -5,9 +5,6 @@
         {% if post.truncated %}
             <p><a href="{{post.post-link}}">Continue reading</a></p>
         {% endif %}
-        {% if post.discuss %}
-            <p>Discuss this post <a href="{{post.discuss}}">here</a>.</p>
-        {% endif %}
         <p><i>Published: {{post.date}}</i></p>
         {% if post.tags %}
             <p><i>
