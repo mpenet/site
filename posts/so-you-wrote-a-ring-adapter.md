@@ -1,6 +1,6 @@
 Title: So you wrote a Ring adapter
 Date: 2026-10-12
-Tags: clojure enso jvm http servers
+Tags: clojure, enso, jvm, http, servers
 
 A Ring adapter is the easiest thing you will ever write. It is also one of the
 hardest, and the gap between those two sentences is the whole story. I spent the
@@ -241,7 +241,4 @@ is](https://github.com/mpenet/enso/blob/main/doc/performance.md).
 And I have no illusion the list above is complete. Somewhere out there is a
 client, or a proxy, or a single malformed frame that I haven't thought of yet,
 and the day someone files the three-line repro for it is the day I learn about
-corner number N+1. So if you find it: please open the issue. You won't be
-proving me wrong so much as proving the one thing I'm actually sure of — that a
-server adapter is never really finished, only shipped, and then quietly fixed
-again.
+corner number N+1. Find it? Open an issue. I collect them.
