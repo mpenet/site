@@ -226,9 +226,8 @@ server's self-defence. That distinction doesn't exist in the forty-line version
 — it can't, because the forty-line version has no idea whether a silent socket
 is a slow client or a window it closed itself.
 
-I don't know how many other servers bother drawing that line, and I'd be glad to
-be pointed at the ones that do — but it's the corner of
-[Enso](https://github.com/mpenet/enso) I find myself caring about most.
+Not every server bothers to draw that line, and it's the corner of
+[Enso](https://github.com/mpenet/enso) I care about most.
 
 ## Doesn't all this blocking cost a thread?
 
