@@ -143,9 +143,9 @@ detection, flow-control-window bookkeeping that survives a stream being reset
 mid-frame, yadda-yadda... The handler still just returns a map. All of this lives
 underneath.
 
-## And now the one nobody gets right
+## And now the hard one
 
-Here is the question that separates a toy from a server, and it is so easy to
+Here is the question I underestimated the longest, and it is so easy to
 state that it hides how hard it is:
 
 > When a client sends data faster than your handler reads it, where does
@@ -174,7 +174,7 @@ a deliberately tiny memory budget and watched a pile of `408`s go to clients
 that had done nothing wrong.
 
 The honest version is more work, and some accounting, and it is the part of
-[enso](https://github.com/mpenet/enso) I believe is the most appealing.
+[enso](https://github.com/mpenet/enso) I spent the most time getting right.
 
 - **One budget for the whole server.** Not a per-connection buffer — a
   single pool of "bytes we are willing to hold on behalf of peers,"
@@ -202,9 +202,10 @@ stream the event loop isn't reading, WebSocket it's a message we've stopped
 pulling because the budget is full. Same principle, three mechanisms.
 
 And the payoff is a property you can state in one sentence: **the server never
-blames a client for back-pressure the server applied.** I have not found many
-servers that can say that, which is why, of everything in
-[Enso](https://github.com/mpenet/enso), this is the one I'd lead with.
+blames a client for back-pressure the server applied.** I don't know how many
+other servers bother with this, and I'd be glad to be pointed at the ones that
+do — but it's the corner of [Enso](https://github.com/mpenet/enso) I find myself
+caring about most.
 
 ## The moral, such as it is
 
@@ -218,14 +219,15 @@ those concerns handled once, cleanly, so that the person using it writes
 (enso/run-server (fn [req] {:status 200 :body "hello"}) {:port 8080})
 ```
 
-and none of it leaks out. The handler is still a plain function on a virtual
-thread. The long tail is just *done*, once, underneath — over HTTP/1.1, HTTP/2,
-HTTP/3 and WebSocket, with no dependency but Clojure itself.
+and none of it leaks out.
 
-That's the pitch. Not that it's fast, [though it
+And that's the pitch. Not that it's fast, [though it
 is](https://github.com/mpenet/enso/blob/main/doc/performance.md).
 
-Of course, the moment this goes up, someone will open an issue with a three-line
-repro that makes a liar of half the sentences above. When you do — and you will
-— congratulations: you've proved the actual thesis of this post, which is that a
-server adapter is never really finished, only shipped.
+And I have no illusion the list above is complete. Somewhere out there is a
+client, or a proxy, or a single malformed frame that I haven't thought of yet,
+and the day someone files the three-line repro for it is the day I learn about
+corner number N+1. So if you find it: please open the issue. You won't be
+proving me wrong so much as proving the one thing I'm actually sure of — that a
+server adapter is never really finished, only shipped, and then quietly fixed
+again.
