@@ -216,10 +216,53 @@ stream the event loop isn't reading, WebSocket it's a message we've stopped
 pulling because the budget is full. Same principle, three mechanisms.
 
 And the payoff is a property you can state in one sentence: **the server never
-blames a client for back-pressure the server applied.** I don't know how many
-other servers bother with this, and I'd be glad to be pointed at the ones that
-do — but it's the corner of [Enso](https://github.com/mpenet/enso) I find myself
-caring about most.
+blames a client for back-pressure the server applied.** Concretely: a client
+only ever gets a `408 Request Timeout` when *it* actually went quiet — stopped
+sending, stalled below the data-rate floor, genuinely slow. A client that was
+sending as fast as the wire allowed, and only went idle because the server
+clamped its flow-control window to protect its own memory, never collects the
+blame for that pause. The timeout measures the client's behaviour, never the
+server's self-defence. That distinction doesn't exist in the forty-line version
+— it can't, because the forty-line version has no idea whether a silent socket
+is a slow client or a window it closed itself.
+
+I don't know how many other servers bother drawing that line, and I'd be glad to
+be pointed at the ones that do — but it's the corner of
+[Enso](https://github.com/mpenet/enso) I find myself caring about most.
+
+## Doesn't all this blocking cost a thread?
+
+Everything above is written in the blocking style the forty-line version
+started with: read, block, parse, call the handler, write, repeat. And the
+whole point of back-pressure is that it *stops reading* — a slow upload, or one
+the budget is throttling, is a connection sitting on a blocked read for a long
+time. On the classic thread-per-connection model that is exactly the disaster
+slowloris exploited: ten thousand slow connections, ten thousand parked OS
+threads, server dead.
+
+The reason it isn't a disaster here is that the threads aren't OS threads. Each
+HTTP/1.1 connection, and each HTTP/2 stream, runs on its own *virtual* thread. A
+blocking read on a virtual thread unmounts it from its carrier — the parked
+upload becomes a continuation on the heap, a few hundred bytes, not an idle
+kernel thread. So a connection we've deliberately stopped reading from costs us
+almost nothing to keep around, which is the whole trick: back-pressure that
+blocks is the single cheapest thing you can do to a virtual thread, and
+slowloris's ten thousand dribblers are ten thousand cheap heap objects, not ten
+thousand threads.
+
+The clocks don't cost a thread each either. Every handshake, header, idle and
+data-rate deadline across every connection and protocol lives in one hashed
+timing wheel on a single daemon thread; arming a timeout is appending to a
+bucket, not spawning anything.
+
+HTTP/3 is the one that works the other way, and it's worth saying because it's
+the exception. Its I/O runs on a small fixed pool of event-loop threads — by
+default one per core — with every connection multiplexed across them and the
+kernel steering datagrams by connection id. There, "withholding" a stream isn't
+a blocked thread at all; it's the loop choosing not to drain that stream this
+tick and moving on to the next. Different shape, same result: the cost of
+holding a throttled peer is bounded and tiny, whether that peer is parked on a
+virtual thread or skipped by an event loop.
 
 ## The moral, such as it is
 
