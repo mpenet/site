@@ -240,15 +240,26 @@ time. On the classic thread-per-connection model that is exactly the disaster
 slowloris exploited: ten thousand slow connections, ten thousand parked OS
 threads, server dead.
 
-The reason it isn't a disaster here is that the threads aren't OS threads. Each
-HTTP/1.1 connection, and each HTTP/2 stream, runs on its own *virtual* thread. A
-blocking read on a virtual thread unmounts it from its carrier — the parked
-upload becomes a continuation on the heap, a few hundred bytes, not an idle
-kernel thread. So a connection we've deliberately stopped reading from costs us
-almost nothing to keep around, which is the whole trick: back-pressure that
-blocks is the single cheapest thing you can do to a virtual thread, and
-slowloris's ten thousand dribblers are ten thousand cheap heap objects, not ten
-thousand threads.
+The reason the parking isn't a disaster here is that the threads aren't OS
+threads. Each HTTP/1.1 connection, and each HTTP/2 stream, runs on its own
+*virtual* thread. A blocking read on a virtual thread unmounts it from its
+carrier — the parked upload becomes a continuation on the heap, a few hundred
+bytes, not an idle kernel thread. So a connection we've deliberately stopped
+reading from costs almost nothing to keep around, which is the whole trick:
+back-pressure that blocks is the single cheapest thing you can do to a virtual
+thread.
+
+But notice this does *not* retroactively solve slowloris, and I don't want to
+pretend it does. Virtual threads take the thread-*exhaustion* vector off the
+table — ten thousand stalled connections are no longer ten thousand pinned OS
+threads. They're still ten thousand live connections, each holding a socket, a
+file descriptor and a little heap, forever, because the forty-line version never
+set a deadline. Cheap is not free, and unbounded times cheap is still dead. The
+thing that actually answers slowloris is the clock that eventually says "you've
+made no real progress, goodbye"; the virtual thread just makes *waiting out* that
+clock, for a legitimately slow client, affordable instead of fatal. The two
+sections aren't in tension — the thread model decides what idle waiting costs,
+the deadlines decide when waiting ends, and you need both.
 
 The clocks don't cost a thread each either. Every handshake, header, idle and
 data-rate deadline across every connection and protocol lives in one hashed
