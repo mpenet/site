@@ -99,10 +99,12 @@ smuggling, and it is not a parsing nit — it is a security boundary that exists
 
 So: reject a message with both framing headers. Reject duplicate
 `Content-Length`. Reject a bare `LF` line ending where the spec wants
-`CRLF`. Reject obs-fold. Reject a chunk size that overflows a long.  Validate
-the request target and the `Host` authority. Every one of these is a line in an
-RFC and a CVE in someone's tracker, and "I'll be lenient, it's friendlier" is
-exactly how you end up on the wrong side of one.
+`CRLF`. Reject obs-fold — the obsolete trick of continuing a header value onto
+the next line by starting it with a space, which two parsers routinely
+disagree about. Reject a chunk size that overflows a long. Validate the request
+target and the `Host` authority. Every one of these is a line in an RFC and a
+CVE in someone's tracker, and "I'll be lenient, it's friendlier" is exactly how
+you end up on the wrong side of one.
 
 ## Closing is harder than opening
 
@@ -111,16 +113,22 @@ right?
 
 Except the client was still uploading its body when you decided to reject
 it. There are unread bytes in the kernel's receive buffer. On most operating
-systems, closing a socket with unread input sends a TCP `RST` — and a reset
-blows away the send buffer too, *including the 400 you just wrote*. The client
-never sees your error. It sees a connection reset and has no idea why.
+systems, closing a socket with unread input sends a TCP `RST` — the abrupt
+"forget this connection ever existed" reset — and a reset blows away the send
+buffer too, *including the 400 you just wrote*. The client never sees your
+error. It sees a connection reset and has no idea why.
 
 The fix is counterintuitive: to close correctly you close *slower*. You shut
 down the write side, then keep reading and discarding input until the peer
-closes or a short deadline passes, so your response survives the close. On
-HTTP/1.0 over TLS a failed body should end without a `close_notify` so the
-client can tell truncation from a clean end. These are the kind of corners you
-only find by watching a real client get a reset where you sent a response.
+closes or a short deadline passes, so your response drains out before the
+socket goes away. There's a TLS twist too. An HTTP/1.0 response with no
+`Content-Length` is delimited by the connection closing, so the receiver can't
+otherwise tell "body ended here" from "body got cut off." TLS normally ends
+with a `close_notify` alert meaning "this was a clean, complete shutdown" — so
+when you're *abandoning* a body mid-stream, you deliberately close *without*
+that alert, which is exactly the signal that lets the client tell a truncated
+body from a finished one. These are the kind of corners you only find by
+watching a real client get a reset where you sent a response.
 
 ## Then you add HTTP/2 and the threat model changes
 
@@ -133,15 +141,20 @@ The famous one is rapid reset —
 took out a chunk of the internet in 2023. A client opens a stream, you start
 doing work, the client immediately sends `RST_STREAM`.  Repeat as fast as the
 wire allows. Each reset is cheap for the client and not cheap for you. There is
-a sequel, MadeYouReset, where the client feeds you a frame that makes *you*
-reset the stream, so your own rapid-reset counter never trips — unless you count
-the resets you initiate on the client's behalf too, which is the sort of thing
-you only think of after reading the first CVE very carefully.
+a sequel, MadeYouReset, where the client doesn't send `RST_STREAM` at all —
+it sends a frame that's malformed in just the right way (a stray
+`WINDOW_UPDATE`, say) so that *you*, the server, are forced to reset the stream
+in response. The work still happened, but the reset came from your side, so your
+own rapid-reset counter never trips — unless you count the resets you initiate
+on the client's behalf too, which is the sort of thing you only think of after
+reading the first CVE very carefully.
 
-So you add reset accounting, a CONTINUATION-flood cap, empty-DATA flood
-detection, flow-control-window bookkeeping that survives a stream being reset
-mid-frame, yadda-yadda... The handler still just returns a map. All of this lives
-underneath.
+So you add reset accounting, a cap on CONTINUATION floods (an unending run of
+header-continuation frames that stretches one request's headers forever), empty-
+DATA flood detection (zero-length `DATA` frames that cost the attacker nothing
+and you a syscall each), flow-control-window bookkeeping that survives a stream
+being reset mid-frame, yadda-yadda... The handler still just returns a map. All
+of this lives underneath.
 
 ## And now the hard one
 
@@ -154,7 +167,7 @@ the data go?
 The forty-line version has an answer by accident: into an unbounded
 buffer, until you run out of memory. One connection, one `OutOfMemory`,
 whole server down. So you add a cap — a maximum number of buffered bytes
-— and feel clever.
+— and feel good.
 
 Now the cap fills up. A client is uploading a 2 GB body to a handler that
 reads slowly, or doesn't read at all, and you have hit your buffer limit.
@@ -184,10 +197,11 @@ The honest version is more work, and some accounting, and it is the part of
   its slice (the budget divided by the connections actually holding
   bytes), so one fat uploader can't freeze everyone else's uploads.
 - **A floor, so the budget limits growth, never progress.** Every
-  connection may always hold a small amount — matching HTTP/2's unasked
-  initial window — so an upload on a connection under its floor keeps
-  moving even when the global budget is exhausted. You throttle; you
-  never fully stall.
+  connection may always hold a small amount — the same 64 KB that HTTP/2
+  hands every stream as its default window before anyone configures
+  anything — so an upload on a connection under its floor keeps moving
+  even when the global budget is exhausted. You throttle; you never fully
+  stall.
 - **Clocks that only count time the client could have used.** This is the
   fix for the lie. While the server is the one withholding reads — a
   receive window it has deliberately closed, a stream it has chosen not
