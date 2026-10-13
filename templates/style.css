@@ -127,11 +127,12 @@ blockquote {
 
 .site-title {
   margin: 0;
-  font: 700 1.15rem var(--mono);
+  font: 700 1.4rem var(--mono);
 }
 
 .site-title a {
   color: var(--text);
+  font-size: inherit;
 }
 
 .site-title a:hover {
@@ -150,6 +151,7 @@ blockquote {
 }
 
 .page-link {
+  font-size: 1rem;
   text-decoration: none;
 }
 
