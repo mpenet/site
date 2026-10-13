@@ -6,6 +6,7 @@
                    :out-dir "docs"
                    :blog-description "Finding balance, one paren at a time."
                    :github-link "https://github.com/mpenet"
+                   :about-link "/about.html"
                    :favicon true})
   quickblog {:doc "Start blogging quickly! Run `bb quickblog help` for details."
              :task (cli/dispatch opts)}}}
