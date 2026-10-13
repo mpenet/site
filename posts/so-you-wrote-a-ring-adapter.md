@@ -32,7 +32,7 @@ scales. `curl localhost:8080` returns your `{:status 200 :body "hello"}`. The
 README example passes. Ship it.
 
 Unsurprisingly, it is completely broken. Not in a "needs polish" way — in a "do
-not put this on a network" way please. Let me show you.
+not put this on a network please" way. Let me show you.
 
 ## Where does the body end?
 
@@ -186,8 +186,8 @@ blamed it in the logs. I know this happens because I ran a multi-hour soak with
 a deliberately tiny memory budget and watched a pile of `408`s go to clients
 that had done nothing wrong.
 
-The honest version is more work, and some accounting, and it is the part of
-[enso](https://github.com/mpenet/enso) I spent the most time getting right.
+The honest version is more work, and some accounting, and it is the part I spent
+the most time trying to get right.
 
 - **One budget for the whole server.** Not a per-connection buffer — a
   single pool of "bytes we are willing to hold on behalf of peers,"
@@ -287,7 +287,8 @@ those concerns handled once, cleanly, so that the person using it writes
 
 and none of it leaks out.
 
-And that's the pitch. Not that it's fast, [though it
+And that's the pitch for [enso](https://github.com/mpenet/enso). Not that it's
+fast, [though it
 is](https://github.com/mpenet/enso/blob/main/doc/performance.md#http11).
 
 And I have no illusion the list above is complete. Somewhere out there is a
