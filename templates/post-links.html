@@ -1,8 +1,8 @@
-<div style="width: 600px">
+<div>
     <h1>{{title}}</h1>
     <ul class="index">
         {% for post-link in post-links %}
-            <li><span><a href="{{post-link.url}}">{{post-link.title}}</a> - {{post-link.date}}</span></li>
+            <li><time>{{post-link.date}}</time><a href="{{post-link.url}}">{{post-link.title}}</a></li>
         {% endfor %}
     </ul>
 </div>

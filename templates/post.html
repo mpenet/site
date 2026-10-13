@@ -7,17 +7,10 @@
   </a>
   {% endif %}
 </h1>
-{{body | safe}}
-<p><i>Published: {{date}}</i></p>
-{% if tags %}
-<p>
-  <i>
-  Tagged:
+<p class="post-meta">
+  <time>{{date}}</time>
   {% for tag in tags %}
-  <span class="tag">
-    <a href="tags/{{tag|escape-tag}}.html">{{tag}}</a>
-  </span>
+  <span class="tag"><a href="tags/{{tag|escape-tag}}.html">{{tag}}</a></span>
   {% endfor %}
-  </i>
 </p>
-{% endif %}
+{{body | safe}}

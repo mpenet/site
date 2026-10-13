@@ -9,7 +9,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-clojure.min.js"></script>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism.min.css">
+    <script>
+      // Applies the saved light/dark choice before first paint; without one the OS setting is used.
+      var savedTheme = localStorage.getItem("theme");
+      if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+
+      function toggleTheme() {
+        var root = document.documentElement;
+        var dark = root.dataset.theme
+          ? root.dataset.theme === "dark"
+          : matchMedia("(prefers-color-scheme: dark)").matches;
+        root.dataset.theme = dark ? "light" : "dark";
+        localStorage.setItem("theme", root.dataset.theme);
+      }
+    </script>
 
         <!-- See Features > favicon in README.md -->
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
@@ -18,7 +31,8 @@
     <link rel="manifest" href="../assets/favicon/site.webmanifest">
     <link rel="mask-icon" href="../assets/favicon/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#fdfcfa" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1b1a20" media="(prefers-color-scheme: dark)">
 
 
     <!-- Social sharing (Facebook, Twitter, LinkedIn, etc.) -->
@@ -61,6 +75,7 @@
 	  
 	  <a class="page-link" href="/about.html">About</a>
 	  
+	  <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
         </div>
         <div>
           <h1 class="site-title">
@@ -73,19 +88,19 @@
 
     <div class="wrapper">
 
-      <div style="width: 600px">
+      <div>
     <h1>Tags</h1>
     <ul class="index">
         
-            <li><span><a href="clojure.html">clojure</a> - 2 posts</span></li>
+            <li><span class="count">2 posts</span><a href="clojure.html">clojure</a></li>
         
-            <li><span><a href="enso.html">enso</a> - 1 post</span></li>
+            <li><span class="count">1 post</span><a href="enso.html">enso</a></li>
         
-            <li><span><a href="servers.html">servers</a> - 1 post</span></li>
+            <li><span class="count">1 post</span><a href="servers.html">servers</a></li>
         
-            <li><span><a href="http.html">http</a> - 1 post</span></li>
+            <li><span class="count">1 post</span><a href="http.html">http</a></li>
         
-            <li><span><a href="jvm.html">jvm</a> - 1 post</span></li>
+            <li><span class="count">1 post</span><a href="jvm.html">jvm</a></li>
         
     </ul>
 </div>
