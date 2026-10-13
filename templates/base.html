@@ -60,25 +60,17 @@
     <div class="site-header">
       <div class="wrapper">
         <div class="site-nav">
+	  {% if about-link %}
+	  <a class="page-link" href="{{about-link}}">About</a>
+	  {% endif %}
           <a class="page-link" href="{{relative-path | safe}}archive.html">Archive</a>
           <a class="page-link" href="{{relative-path | safe}}tags/index.html">Tags</a>
-	  <a class="page-link" href="{{relative-path | safe}}atom.xml">
-            Feed
-          </a>
 	  {% if twitter-handle %}
 	  <a class="page-link" href="https://twitter.com/{{twitter-handle}}">
             Twitter
           </a>
 	  {% endif %}
-
-
-	  <a class="page-link" href="https://bsky.app/profile/s-exp.com">
-            Bsky
-      </a>      
 	  <a class="page-link" href="https://github.com/mpenet">Github</a>
-	  {% if about-link %}
-	  <a class="page-link" href="{{about-link}}">About</a>
-	  {% endif %}
 	  <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">&#9680;</button>
         </div>
         <div>
