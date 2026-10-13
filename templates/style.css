@@ -176,7 +176,7 @@ blockquote {
 
 .post-meta {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: var(--muted);
 }
 
