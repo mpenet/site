@@ -289,7 +289,7 @@ those concerns handled once, cleanly, so that the person using it writes
 and none of it leaks out.
 
 And that's the pitch. Not that it's fast, [though it
-is](https://github.com/mpenet/enso/blob/main/doc/performance.md).
+is](https://github.com/mpenet/enso/blob/main/doc/performance.md#http11).
 
 And I have no illusion the list above is complete. Somewhere out there is a
 client, or a proxy, or a single malformed frame that I haven't thought of yet,
